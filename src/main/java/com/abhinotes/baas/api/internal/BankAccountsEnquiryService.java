@@ -3,10 +3,8 @@ package com.abhinotes.baas.api.internal;
 import com.abhinotes.baas.api.model.Account;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,7 +12,7 @@ import java.util.List;
  * Dummy Account Enquiry service
  */
 @RestController
-public class AccountsEnquiryService {
+public class BankAccountsEnquiryService {
 
     private static final List<String> VALIDACCOUNTS = Arrays.asList("9876543210","9876543212","9876543214", "8876543210");
 

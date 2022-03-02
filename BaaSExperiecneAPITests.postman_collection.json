@@ -1,0 +1,152 @@
+{
+	"info": {
+		"_postman_id": "6a9e00b5-44b2-4d2b-adc9-24a7b7cd1e24",
+		"name": "BaaSExperiecneAPITests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "auth/token",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/baas/api/auth/token",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"baas",
+								"api",
+								"auth",
+								"token"
+							]
+						},
+						"description": "Get Generated Token"
+					},
+					"response": []
+				},
+				{
+					"name": "auth/verify",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "86e00c27-0811-4388-a935-d0c4f806339c"
+						},
+						"url": {
+							"raw": "http://localhost:8080/baas/api/auth/verify",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"baas",
+								"api",
+								"auth",
+								"verify"
+							]
+						},
+						"description": "Verify Token"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Accounts",
+			"item": [
+				{
+					"name": "accounts/{id}",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/baas/api/accounts/123",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"baas",
+								"api",
+								"accounts",
+								"123"
+							]
+						},
+						"description": "Fetch Accouitn Details"
+					},
+					"response": []
+				},
+				{
+					"name": "accounts/valid/{id}",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/baas/api/accounts/valid/8876543210",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"baas",
+								"api",
+								"accounts",
+								"valid",
+								"8876543210"
+							]
+						},
+						"description": "Check Account is a valid Account or not"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Payments",
+			"item": [
+				{
+					"name": "payments/debit",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"requestId\": \"93a37db0-8b19-44b2-b0e3-8a74481e9c66\",\n    \"debitAccount\": \"9876543210\",\n    \"creditAccount\": \"9876543211\",\n    \"txnCcy\": \"INR\",\n    \"amount\": 1500.25\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/baas/api/payments/debit",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"baas",
+								"api",
+								"payments",
+								"debit"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

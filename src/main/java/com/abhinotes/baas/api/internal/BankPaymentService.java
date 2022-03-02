@@ -3,37 +3,45 @@ package com.abhinotes.baas.api.internal;
 import com.abhinotes.baas.api.model.Payment;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.UUID;
 
 @RestController
 @Log
-public class PaymentService {
+public class BankPaymentService {
 
     @Autowired
     RestTemplate restTemplate;
 
+    @Value("${baas.urls.base}")
+    String baseUrl;
+
     @PostMapping(path = "/payments/debit")
-    private Payment doPayment(@RequestBody Payment payment) {
+    private Payment doPayment(@RequestBody Payment payment, HttpServletRequest request) {
         log.info(String.format("Received debit payment request : ", payment.toString()));
-        //String accountAPIURL = String.format("http://localhost:8080/baas/api/accounts/valid/%s", payment.getDebitAccount());
-        String accountAPIURL = String.format("accounts/valid/%s", payment.getDebitAccount());
+        String accountAPIURL = String.format("%saccounts/valid/%s",baseUrl, payment.getDebitAccount());
         log.info(accountAPIURL);
-        log.info(restTemplate
-                .getForObject(accountAPIURL,Boolean.class).toString());
+
+        boolean isValidAccount = restTemplate
+                .getForObject(accountAPIURL,Boolean.class);
+
+        if(isValidAccount && payment.getAmount() > 0 ) {
+            payment.setStatus("Success");
+        } else {
+            payment.setStatus("Failed, Invalid Account/Amount!!");
+        }
 
         payment.setTimestamp(new Date());
         payment.setTxnReference(UUID.randomUUID().toString());
-        payment.setStatus("Success");
+
 
         return payment;
     }

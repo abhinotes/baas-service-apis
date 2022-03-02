@@ -23,7 +23,6 @@ public class PaymentService {
     RestTemplate restTemplate;
 
     @PostMapping(path = "/payments/debit")
-    @ResponseBody
     private Payment doPayment(@RequestBody Payment payment) {
         log.info(String.format("Received debit payment request : ", payment.toString()));
         //String accountAPIURL = String.format("http://localhost:8080/baas/api/accounts/valid/%s", payment.getDebitAccount());

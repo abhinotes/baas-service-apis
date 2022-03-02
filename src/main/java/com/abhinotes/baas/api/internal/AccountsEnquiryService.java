@@ -19,7 +19,6 @@ public class AccountsEnquiryService {
     private static final List<String> VALIDACCOUNTS = Arrays.asList("9876543210","9876543212","9876543214", "8876543210");
 
     @GetMapping(path = "/accounts/{id}")
-    @ResponseBody
     private Account isValidAccount(@PathVariable String id) {
         Account userAccount = Account.builder()
                 .accountId(id)
@@ -33,7 +32,6 @@ public class AccountsEnquiryService {
     }
 
     @GetMapping(path = "/accounts/valid/{id}")
-    @ResponseBody
     private boolean getAccountDetails(@PathVariable String id) throws InterruptedException {
         if ( VALIDACCOUNTS.contains(id)) {
 

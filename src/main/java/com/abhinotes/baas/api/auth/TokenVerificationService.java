@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class TokenVerificationService {
 
     @PostMapping(path = "/auth/verify")
-    @ResponseBody
     private boolean verifyToken(@RequestBody String requestData) {
         log.info(String.format("Auth Request for token %s is successful", requestData));
         return true;

@@ -13,7 +13,6 @@ import java.util.UUID;
 public class TokenGeneratorService {
 
     @GetMapping(path = "/auth/token")
-    @ResponseBody
     private String generateToken() {
         return UUID.randomUUID().toString();
     }

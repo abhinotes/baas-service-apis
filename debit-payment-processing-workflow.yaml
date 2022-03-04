@@ -13,12 +13,15 @@ main:
        switch:
          - condition: ${not tokenVerified.body}
            next: notifyFailure
-       next: processDebitPayment
+         - condition: ${tokenVerified.body}
+           next: processDebitPayment
     - notifyFailure:
         assign:
           - resultMessage: "Unauthenticated Request!!!"
+        next: result
     - processDebitPayment:
         assign:
-          - resultMessage: "Authenticated Request"
+          - resultMessage: "Debit Payment Processing Submitted !!!"
+        next: result
     - result:
         return: ${resultMessage}

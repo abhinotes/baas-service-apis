@@ -1,0 +1,24 @@
+main:
+  params: [token]
+  steps:
+    - verifySecurityToken:
+        call: http.post
+        args:
+          url: https://baas-service-api-sjeaxywgpa-de.a.run.app/baas/api/auth/verify
+          body:
+            Content:"86e00c27-0811-4388-a935-d0c4f806339c"
+          timeout: 1800
+        result: tokenVerificationResult
+    - processtokenVerificationResult:
+       switch:
+         - condition: ${tokenVerificationResult == false}
+           next: notifyFailure
+       next: processDebitPayment
+    - notifyFailure:
+        assign:
+          - resultMessage: "Unauthenticated Request!!!"
+    - processDebitPayment:
+        assign:
+          - resultMessage: "Authenticated Request"
+    - result:
+        return: ${resultMessage}

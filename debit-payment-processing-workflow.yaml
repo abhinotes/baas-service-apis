@@ -8,10 +8,10 @@ main:
           body:
             Content:"86e00c27-0811-4388-a935-d0c4f806339c"
           timeout: 1800
-        result: tokenVerificationResult
+        result: tokenVerified
     - processtokenVerificationResult:
        switch:
-         - condition: ${tokenVerificationResult == false}
+         - condition: ${not tokenVerified.body}
            next: notifyFailure
        next: processDebitPayment
     - notifyFailure:

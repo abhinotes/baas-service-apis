@@ -1,12 +1,11 @@
 main:
-  params: [token]
+  params: [input]
   steps:
     - verifySecurityToken:
         call: http.post
         args:
           url: https://baas-service-api-sjeaxywgpa-de.a.run.app/baas/api/auth/verify
-          body:
-            Content:"86e00c27-0811-4388-a935-d0c4f806339c"
+          body: ${input.token}
           timeout: 1800
         result: tokenVerified
     - processtokenVerificationResult:

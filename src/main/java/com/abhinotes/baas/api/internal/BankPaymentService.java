@@ -25,7 +25,8 @@ public class BankPaymentService {
 
     @PostMapping(path = "/payments/debit")
     private Payment doPayment(@RequestBody Payment payment, HttpServletRequest request) {
-        log.info(String.format("Received debit payment request : ", payment.toString()));
+        log.info("Security Token Received : " + !request.getHeader("securityToken").isBlank());
+        log.info(String.format("Received debit payment request : %s", payment.toString()));
         String accountAPIURL = String.format("%saccounts/valid/%s",baseUrl, payment.getDebitAccount());
         log.info(accountAPIURL);
 
@@ -40,7 +41,6 @@ public class BankPaymentService {
 
         payment.setTimestamp(new Date());
         payment.setTxnReference(UUID.randomUUID().toString());
-
 
         return payment;
     }

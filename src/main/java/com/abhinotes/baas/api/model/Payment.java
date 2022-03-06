@@ -1,14 +1,13 @@
 package com.abhinotes.baas.api.model;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.NonNull;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.Date;
 
 @Builder
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @ToString
 public class Payment {
 

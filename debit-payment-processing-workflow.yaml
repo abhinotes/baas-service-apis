@@ -11,7 +11,7 @@ main:
     - logTokenVerificationResult:
         call: sys.log
         args:
-          data: ${tokenVerified.body}
+          data: ${"Autehticated ? :\ " + tokenVerified.body}
     - result:
        switch:
          - condition: ${not tokenVerified.body}
@@ -33,6 +33,7 @@ paymentWorkflow:
         call: sys.log
         args:
           data: ${payment}
+          data: ${"Payment Request Json :\" + payment}
     - processDebitPayment:
         call: http.post
         args:
@@ -43,6 +44,6 @@ paymentWorkflow:
     - logPaymentRespnse:
         call: sys.log
         args:
-          data: ${paymentProcessingResponse.body}
+          data: ${"Payment Processing Response :\ " + paymentProcessingResponse.body}
     - paymentWorkflowResult:
         return: ${paymentProcessingResponse.body}

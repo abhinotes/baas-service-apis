@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Date;
 import java.util.UUID;
 
@@ -24,8 +26,21 @@ public class BankPaymentService {
     String baseUrl;
 
     @PostMapping(path = "/payments/debit")
-    private Payment doPayment(@RequestBody Payment payment, HttpServletRequest request) {
-        log.info("Security Token Received : " + !request.getHeader("securityToken").isBlank());
+    private Payment doPayment(@RequestBody Payment payment, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+
+
+        String securityToken =  request.getHeader("securityToken");
+        String tokenValidationUrl = String.format("%sauth/verify",baseUrl);
+        if (securityToken == null || !restTemplate
+                .postForObject(tokenValidationUrl,securityToken, Boolean.class)) {
+            if (securityToken == null) {
+                log.info("Unauthorized, Please provide a valid security token in http header with key \"securityToken\" !!!");
+            }
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return null;
+        }
+
         log.info(String.format("Received debit payment request : %s", payment.toString()));
         String accountAPIURL = String.format("%saccounts/valid/%s",baseUrl, payment.getDebitAccount());
         log.info(accountAPIURL);

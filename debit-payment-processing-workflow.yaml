@@ -32,7 +32,6 @@ paymentWorkflow:
     - logPaymentRequest:
         call: sys.log
         args:
-          data: ${payment}
           data: ${"Payment Request Json :\" + payment}
     - processDebitPayment:
         call: http.post

@@ -8,19 +8,41 @@ main:
           body: ${input.token}
           timeout: 1800
         result: tokenVerified
-    - processtokenVerificationResult:
+    - logTokenVerificationResult:
+        call: sys.log
+        args:
+          data: ${tokenVerified.body}
+    - result:
        switch:
          - condition: ${not tokenVerified.body}
            next: notifyFailure
-         - condition: ${tokenVerified.body}
-           next: processDebitPayment
-    - notifyFailure:
-        assign:
-          - resultMessage: "Unauthenticated Request!!!"
-        next: result
-    - processDebitPayment:
-        assign:
-          - resultMessage: "Debit Payment Processing Submitted !!!"
-        next: result
-    - result:
+    - callpaymentWorkflow:
+        call: paymentWorkflow
+        args:
+            payment: ${input.payment}
+        result : resultMessage
+    - notifyResponse:
         return: ${resultMessage}
+    - notifyFailure:
+        return: "Unauthenticated Request!!!"
+
+paymentWorkflow:
+  params: [payment]
+  steps:
+    - logPaymentRequest:
+        call: sys.log
+        args:
+          data: ${payment}
+    - processDebitPayment:
+        call: http.post
+        args:
+          url: https://baas-service-api-sjeaxywgpa-de.a.run.app/baas/api/payments/debit
+          body: ${payment}
+          timeout: 1800
+        result: paymentProcessingResponse
+    - logPaymentRespnse:
+        call: sys.log
+        args:
+          data: ${paymentProcessingResponse.body}
+    - paymentWorkflowResult:
+        return: ${paymentProcessingResponse.body}

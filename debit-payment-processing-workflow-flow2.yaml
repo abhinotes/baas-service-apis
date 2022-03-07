@@ -1,0 +1,117 @@
+main:
+  params: [input]
+  steps:
+    - initRetryCount:
+        assign:
+          - retryCount: 0
+    - callTokenService:
+        try:
+          call: http.get
+          args:
+            url: https://baas-service-api-sjeaxywgpa-de.a.run.app/baas/api/auth/token
+            timeout: 600
+          result: securityToken
+        next: resetRetryCount
+        except:
+          as: ex
+          steps:
+            - known_errors:
+                switch:
+                  - condition: ${"TimeoutError" in ex.tags}
+                    steps:
+                      - logRetryAttempt:
+                          call: sys.log
+                          args:
+                            data: ${"Retrying token fetch, Retry No :\\  "  + retryCount}
+                    next: retryCall
+                  - condition: ${not("HttpError" in ex.tags)}
+                    next: connection_problem
+                  - condition: ${ex.code == 404}
+                    next: url_not_found
+                  - condition: ${ex.code == 403}
+                    next: auth_problem
+            - unhandled_exception:
+                raise: ${ex}
+    - resetRetryCount:
+        assign:
+          - retryCount: 0
+        next: logSecurityTokenNotForProduction
+    - retryCall:
+        switch:
+          - condition: ${retryCount < 3}
+            steps:
+              - incrementRetryCount:
+                  assign:
+                    - retryCount: ${retryCount + 1}
+            next: callTokenService
+    - logSecurityTokenNotForProduction:
+        call: sys.log
+        args:
+          data: ${securityToken.body}
+        next: verifyTokenIsPresent
+    - verifyTokenIsPresent:
+       switch:
+         - condition: ${securityToken.body == null}
+           next: notifyFailure
+       next: callpaymentWorkflow
+    - callpaymentWorkflow:
+        call: paymentWorkflow
+        args:
+            securityToken: ${securityToken.body}
+            payment: ${input.payment}
+        result : resultMessage
+        next: notifyResponse
+    - notifyResponse:
+        return: ${resultMessage}
+    - notifyFailure:
+        return: "Unable to get Security Token !!!"
+    - connection_problem:
+        return: "Connection problem; check URL"
+    - url_not_found:
+        return: "Sorry, URL wasn't found"
+    - auth_problem:
+        return: "Authentication error"
+
+paymentWorkflow:
+  params: [payment, securityToken]
+  steps:
+    - initRetryCount:
+        assign:
+          - retryCount: 0
+    - logPaymentRequest:
+        call: sys.log
+        args:
+          data: ${payment}
+    - processDebitPayment:
+        try:
+          call: http.post
+          args:
+            url: https://baas-service-api-sjeaxywgpa-de.a.run.app/baas/api/payments/debit
+            headers:
+              "securityToken": ${securityToken}
+            body: ${payment}
+            timeout: 5
+          result: paymentProcessingResponse
+        retry:
+          predicate: ${custom_predicate}
+          max_retries: 3
+          backoff:
+            initial_delay: 2
+            max_delay: 60
+            multiplier: 2
+    - logPaymentResponse:
+        call: sys.log
+        args:
+          data: ${paymentProcessingResponse.body}
+    - paymentWorkflowResult:
+        return: ${paymentProcessingResponse.body}
+
+custom_predicate:
+  params: [ex]
+  steps:
+    - what_to_repeat:
+        switch:
+          - condition: ${"TimeoutError" in ex.tags}
+            return: True
+    - otherwise:
+        return: False

@@ -75,9 +75,6 @@ main:
 paymentWorkflow:
   params: [payment, securityToken]
   steps:
-    - initRetryCount:
-        assign:
-          - retryCount: 0
     - logPaymentRequest:
         call: sys.log
         args:
@@ -90,13 +87,13 @@ paymentWorkflow:
             headers:
               "securityToken": ${securityToken}
             body: ${payment}
-            timeout: 5
+            timeout: 500
           result: paymentProcessingResponse
         retry:
           predicate: ${custom_predicate}
           max_retries: 3
           backoff:
-            initial_delay: 2
+            initial_delay: 4
             max_delay: 60
             multiplier: 2
     - logPaymentResponse:
